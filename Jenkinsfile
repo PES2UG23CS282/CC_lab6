@@ -19,7 +19,11 @@ pipeline {
             steps {
                 sh '''
                 docker rm -f nginx-lb || true
-                docker run -d --name nginx-lb -p 80:80 -v $(pwd)/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro nginx
+                docker run -d \\
+                  --name nginx-lb \\
+                  -p 80:80 \\
+                  -v ${WORKSPACE}/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro \\
+                  nginx
                 '''
             }
         }
