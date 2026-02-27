@@ -16,7 +16,9 @@ pipeline {
         stage('Deploy NGINX Load Balancer') {
             steps {
                 sh 'docker rm -f nginx-lb || true'
-                sh 'docker run -d --name nginx-lb -p 80:80 -v $(pwd)/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro nginx'
+                sh 'docker run -d --name nginx-lb -p 80:80 nginx'
+                sh 'docker cp nginx/default.conf nginx-lb:/etc/nginx/conf.d/default.conf'
+                sh 'docker exec nginx-lb nginx -s reload'
             }
         }
     }
