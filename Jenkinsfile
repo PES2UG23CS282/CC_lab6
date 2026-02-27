@@ -8,15 +8,16 @@ pipeline {
         }
         stage('Deploy Backends') {
             steps {
+                sh 'docker network create lab-network || true'
                 sh 'docker rm -f backend1 backend2 || true'
-                sh 'docker run -d --name backend1 backend-app'
-                sh 'docker run -d --name backend2 backend-app'
+                sh 'docker run -d --network lab-network --name backend1 backend-app'
+                sh 'docker run -d --network lab-network --name backend2 backend-app'
             }
         }
         stage('Deploy NGINX Load Balancer') {
             steps {
                 sh 'docker rm -f nginx-lb || true'
-                sh 'docker run -d --name nginx-lb -p 80:80 nginx'
+                sh 'docker run -d --network lab-network --name nginx-lb -p 80:80 nginx'
                 sh 'docker cp nginx/default.conf nginx-lb:/etc/nginx/conf.d/default.conf'
                 sh 'docker exec nginx-lb nginx -s reload'
             }
